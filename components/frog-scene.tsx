@@ -5,11 +5,13 @@ interface FrogSceneProps {
   frogCode: string;
   scene: FrogSceneType;
   className?: string;
+  children?: React.ReactNode;
+  sizes?: string;
 }
 
 const LAYERS = ["bg", "mg", "fg"] as const;
 
-export function FrogScene({ frogCode, scene, className = "" }: FrogSceneProps) {
+export function FrogScene({ frogCode, scene, className = "", children, sizes }: FrogSceneProps) {
   const prefix = `${frogCode}-${scene.condition}-${scene.location}-${scene.activity}`;
 
   return (
@@ -22,11 +24,19 @@ export function FrogScene({ frogCode, scene, className = "" }: FrogSceneProps) {
           src={`/frog/${prefix}_${layer}.png`}
           alt={layer === "fg" ? `Weather Frog - ${scene.condition}` : ""}
           fill
-          sizes="(min-width: 1200px) 380px, (min-width: 768px) 300px, 100vw"
+          sizes={sizes ?? "(min-width: 1024px) 672px, (min-width: 768px) 560px, 100vw"}
           style={{ zIndex: i, objectFit: "cover" }}
           priority={layer === "bg"}
         />
       ))}
+      {children && (
+        <div className="absolute bottom-0 left-0 right-0 h-[45%] scrim-bottom z-10" />
+      )}
+      {children && (
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-6">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

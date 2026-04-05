@@ -45,6 +45,16 @@ export function Header() {
           >
             About
           </Link>
+          <Link
+            href="/art-preview"
+            className={`transition-colors ${
+              pathname === "/art-preview"
+                ? "text-green-700 font-semibold"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Gallery
+          </Link>
         </nav>
       </div>
     </header>

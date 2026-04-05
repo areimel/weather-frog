@@ -1,54 +1,37 @@
 import type { CurrentWeatherData } from "@/lib/types";
+import { Icon } from "@iconify/react";
+import { getWeatherIcon } from "@/lib/weather-icons";
 
 interface CurrentWeatherProps {
   data: CurrentWeatherData;
   locationName: string;
 }
 
-function formatTime(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 export function CurrentWeather({ data, locationName }: CurrentWeatherProps) {
   return (
-    <div className="flex flex-col justify-center gap-4 rounded-2xl bg-white/70 backdrop-blur-sm p-6 shadow-sm">
-      <div>
-        <div className="text-6xl font-light text-gray-800">{data.temp}°F</div>
-        <div className="text-xl font-medium text-gray-600 mt-1 capitalize">
-          {data.description}
-        </div>
-        <div className="text-sm text-gray-500 mt-1">
-          📍 {locationName}
-        </div>
-        <div className="text-sm text-gray-400 mt-1">
-          Feels like {data.feelsLike}° · H:{data.tempMax}° L:{data.tempMin}°
-        </div>
+    <div className="text-shadow-hero">
+      {/* Location */}
+      <div className="text-sm text-white/80 font-medium mb-1 flex items-center gap-1.5">
+        <Icon icon="lucide:map-pin" className="w-3.5 h-3.5" />
+        {locationName}
       </div>
-
-      <div className="grid grid-cols-3 gap-3 text-sm text-gray-600">
-        <div className="flex items-center gap-1.5">
-          <span>💧</span>
-          <span>Humidity {data.humidity}%</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>💨</span>
-          <span>Wind {data.windSpeed} mph</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>👁</span>
-          <span>Vis {data.visibility} mi</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>🌅</span>
-          <span>{formatTime(data.sunrise)}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>🌇</span>
-          <span>{formatTime(data.sunset)}</span>
-        </div>
+      {/* Temperature */}
+      <div className="flex items-start gap-3">
+        <span className="text-7xl font-light text-white tracking-tight">
+          {data.temp}°
+        </span>
+        <Icon
+          icon={getWeatherIcon(data.icon)}
+          className="w-12 h-12 mt-2 text-white drop-shadow-lg"
+        />
+      </div>
+      {/* Description */}
+      <div className="text-xl text-white/90 font-medium capitalize mt-1">
+        {data.description}
+      </div>
+      {/* Feels like + H/L */}
+      <div className="text-sm text-white/70 mt-1">
+        Feels like {data.feelsLike}° · H:{data.tempMax}° L:{data.tempMin}°
       </div>
     </div>
   );

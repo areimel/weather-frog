@@ -3,26 +3,34 @@
 import { useWeather } from "@/components/weather-provider";
 import { FrogScene } from "@/components/frog-scene";
 import { CurrentWeather } from "@/components/current-weather";
+import { WeatherDetails } from "@/components/weather-details";
 import { HourlyForecast } from "@/components/hourly-forecast";
 import { DailyForecast } from "@/components/daily-forecast";
+import { Icon } from "@iconify/react";
 
 function LoadingSkeleton() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-6 animate-pulse">
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-[380px] aspect-square bg-white/40 rounded-2xl" />
-        <div className="flex-1 bg-white/40 rounded-2xl min-h-[200px]" />
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      {/* Hero skeleton */}
+      <div className="max-w-2xl mx-auto animate-fade-up">
+        <div className="aspect-square bg-white/40 rounded-2xl animate-pulse" />
       </div>
-      <div className="h-24 bg-white/40 rounded-2xl" />
-      <div className="h-64 bg-white/40 rounded-2xl" />
+      {/* Details skeleton */}
+      <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
+      {/* Hourly skeleton */}
+      <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
+      {/* Daily skeleton */}
+      <div className="h-64 bg-white/40 rounded-2xl animate-pulse" />
     </div>
   );
 }
 
 function LocationPrompt() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-      <div className="text-7xl mb-6">🐸</div>
+    <div className="max-w-4xl mx-auto px-4 py-20 text-center animate-fade-up">
+      <div className="flex justify-center mb-6">
+        <Icon icon="meteocons:partly-cloudy-day-fill" width={80} height={80} />
+      </div>
       <h2 className="text-2xl font-semibold text-gray-700 mb-3">
         Where are you, friend?
       </h2>
@@ -36,8 +44,10 @@ function LocationPrompt() {
 
 function ErrorDisplay({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-      <div className="text-7xl mb-6">🐸</div>
+    <div className="max-w-4xl mx-auto px-4 py-20 text-center animate-fade-up">
+      <div className="flex justify-center mb-6">
+        <Icon icon="meteocons:thunderstorms-fill" width={80} height={80} />
+      </div>
       <h2 className="text-xl font-semibold text-gray-700 mb-3">{message}</h2>
       <button
         onClick={onRetry}
@@ -67,38 +77,44 @@ export default function Home() {
   if (!weather || !location) return <LocationPrompt />;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
-      {/* Hero row: frog art + current conditions */}
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-[380px] shrink-0">
-          {frogScene ? (
-            <FrogScene frogCode={frogCode} scene={frogScene} />
-          ) : (
-            <div className="aspect-square bg-white/40 rounded-2xl flex items-center justify-center text-6xl">
-              🐸
-            </div>
-          )}
-        </div>
-        <div className="flex-1">
-          <CurrentWeather
-            data={weather.current}
-            locationName={
-              location.state
-                ? `${location.name}, ${location.state}`
-                : location.name
-            }
-          />
-        </div>
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      {/* Hero section */}
+      <div className="max-w-2xl mx-auto animate-fade-up w-full">
+        {frogScene ? (
+          <FrogScene frogCode={frogCode} scene={frogScene}>
+            <CurrentWeather
+              data={weather.current}
+              locationName={
+                location.state
+                  ? `${location.name}, ${location.state}`
+                  : location.name
+              }
+            />
+          </FrogScene>
+        ) : (
+          <div className="aspect-square bg-white/40 rounded-2xl flex items-center justify-center">
+            <Icon icon="meteocons:partly-cloudy-day-fill" width={80} height={80} />
+          </div>
+        )}
+      </div>
+
+      {/* Weather details section */}
+      <div className="max-w-4xl mx-auto w-full">
+        <WeatherDetails data={weather.current} />
       </div>
 
       {/* Hourly forecast */}
       {weather.hourly.length > 0 && (
-        <HourlyForecast data={weather.hourly} />
+        <div className="max-w-4xl mx-auto w-full">
+          <HourlyForecast data={weather.hourly} />
+        </div>
       )}
 
       {/* Daily forecast */}
       {weather.daily.length > 0 && (
-        <DailyForecast data={weather.daily} />
+        <div className="max-w-4xl mx-auto w-full">
+          <DailyForecast data={weather.daily} />
+        </div>
       )}
     </div>
   );

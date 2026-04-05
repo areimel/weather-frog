@@ -1,23 +1,9 @@
+import { Icon } from "@iconify/react";
+import { getWeatherIcon } from "@/lib/weather-icons";
 import type { HourlyDataPoint } from "@/lib/types";
 
 interface HourlyForecastProps {
   data: HourlyDataPoint[];
-}
-
-// Simple OWM icon code → emoji mapping
-function weatherEmoji(icon: string): string {
-  const map: Record<string, string> = {
-    "01d": "☀️", "01n": "🌙",
-    "02d": "🌤", "02n": "☁️",
-    "03d": "⛅", "03n": "⛅",
-    "04d": "☁️", "04n": "☁️",
-    "09d": "🌧", "09n": "🌧",
-    "10d": "🌦", "10n": "🌧",
-    "11d": "⛈", "11n": "⛈",
-    "13d": "🌨", "13n": "🌨",
-    "50d": "🌫", "50n": "🌫",
-  };
-  return map[icon] ?? "🌡";
 }
 
 function formatHour(timestamp: number): string {
@@ -30,6 +16,7 @@ export function HourlyForecast({ data }: HourlyForecastProps) {
   return (
     <div>
       <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
+        <Icon icon="lucide:clock" className="w-3.5 h-3.5 inline mr-1.5" />
         Hourly Forecast
       </h3>
       <div className="flex gap-1.5 overflow-x-auto pb-2">
@@ -38,18 +25,28 @@ export function HourlyForecast({ data }: HourlyForecastProps) {
             key={item.dt}
             className={`
               min-w-[72px] flex-shrink-0 rounded-2xl p-3 text-center
-              ${i === 0 ? "bg-white/75 shadow-sm" : "bg-white/50"}
+              ${
+                i === 0
+                  ? "bg-white/75 shadow-sm ring-2 ring-green-400/40"
+                  : "bg-white/50 hover:bg-white/70 transition-colors"
+              }
             `}
           >
             <div className="text-xs text-gray-500">
               {i === 0 ? "Now" : formatHour(item.dt)}
             </div>
-            <div className="text-xl my-1">{weatherEmoji(item.icon)}</div>
+            <div className="text-xl my-1">
+              <Icon
+                icon={getWeatherIcon(item.icon)}
+                className="w-7 h-7 text-gray-600 inline"
+              />
+            </div>
             <div className="text-sm font-semibold text-gray-700">
               {item.temp}°
             </div>
             {item.pop > 0.05 && (
-              <div className="text-[10px] text-blue-400 mt-0.5">
+              <div className="flex items-center gap-0.5 text-[10px] text-blue-500 mt-0.5 justify-center">
+                <Icon icon="lucide:droplets" className="w-2.5 h-2.5" />
                 {Math.round(item.pop * 100)}%
               </div>
             )}
