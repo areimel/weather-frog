@@ -17,6 +17,12 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "lat and lon are required" }, { status: 400 });
   }
 
+  const latNum = parseFloat(lat);
+  const lonNum = parseFloat(lon);
+  if (isNaN(latNum) || isNaN(lonNum) || latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
+    return Response.json({ error: "Invalid coordinates" }, { status: 400 });
+  }
+
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -98,11 +104,9 @@ export async function GET(request: NextRequest) {
     day.pops.push(item.pop ?? 0);
   }
 
-  // Skip today, take next 5 days
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Skip the first (partial current) day, take next 5 days
   const daily: DailyDataPoint[] = [...dailyMap.entries()]
-    .filter(([date]) => date !== todayStr)
-    .slice(0, 5)
+    .slice(1, 6)
     .map(([, data]) => {
       // Pick the most common condition for the day (midday-biased)
       const midCondition =

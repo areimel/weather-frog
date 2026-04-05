@@ -14,6 +14,7 @@ export function LocationSearch({ onSelect, currentLocation }: LocationSearchProp
   const [isOpen, setIsOpen] = useState(false);
   const [searching, setSearching] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -26,25 +27,29 @@ export function LocationSearch({ onSelect, currentLocation }: LocationSearchProp
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  async function handleSearch(value: string) {
+  function handleSearch(value: string) {
     setQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
     if (value.length < 2) {
       setResults([]);
       setIsOpen(false);
       return;
     }
 
-    setSearching(true);
-    try {
-      const res = await fetch(`/api/geocode?q=${encodeURIComponent(value)}`);
-      if (res.ok) {
-        const data: Location[] = await res.json();
-        setResults(data);
-        setIsOpen(data.length > 0);
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(value)}`);
+        if (res.ok) {
+          const data: Location[] = await res.json();
+          setResults(data);
+          setIsOpen(data.length > 0);
+        }
+      } finally {
+        setSearching(false);
       }
-    } finally {
-      setSearching(false);
-    }
+    }, 350);
   }
 
   function handleSelect(loc: Location) {
