@@ -10,17 +10,19 @@ import { Icon } from "@iconify/react";
 
 function LoadingSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-      {/* Hero skeleton */}
-      <div className="max-w-2xl mx-auto animate-fade-up">
-        <div className="aspect-square bg-white/40 rounded-2xl animate-pulse" />
+    <div className="max-w-screen-2xl mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Hero skeleton */}
+        <div className="animate-fade-up">
+          <div className="aspect-square bg-white/40 rounded-2xl animate-pulse" />
+        </div>
+        {/* Right column skeleton */}
+        <div className="space-y-6">
+          <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
+          <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
+          <div className="h-64 bg-white/40 rounded-2xl animate-pulse" />
+        </div>
       </div>
-      {/* Details skeleton */}
-      <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
-      {/* Hourly skeleton */}
-      <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
-      {/* Daily skeleton */}
-      <div className="h-64 bg-white/40 rounded-2xl animate-pulse" />
     </div>
   );
 }
@@ -77,45 +79,41 @@ export default function Home() {
   if (!weather || !location) return <LocationPrompt />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-      {/* Hero section */}
-      <div className="max-w-2xl mx-auto animate-fade-up w-full">
-        {frogScene ? (
-          <FrogScene frogCode={frogCode} scene={frogScene}>
-            <CurrentWeather
-              data={weather.current}
-              locationName={
-                location.state
-                  ? `${location.name}, ${location.state}`
-                  : location.name
-              }
-            />
-          </FrogScene>
-        ) : (
-          <div className="aspect-square bg-white/40 rounded-2xl flex items-center justify-center">
-            <Icon icon="meteocons:partly-cloudy-day-fill" width={80} height={80} />
-          </div>
-        )}
-      </div>
-
-      {/* Weather details section */}
-      <div className="max-w-4xl mx-auto w-full">
-        <WeatherDetails data={weather.current} />
-      </div>
-
-      {/* Hourly forecast */}
-      {weather.hourly.length > 0 && (
-        <div className="max-w-4xl mx-auto w-full">
-          <HourlyForecast data={weather.hourly} />
+    <div className="max-w-screen-2xl mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left column — Hero */}
+        <div className="animate-fade-up">
+          {frogScene ? (
+            <FrogScene frogCode={frogCode} scene={frogScene}>
+              <CurrentWeather
+                data={weather.current}
+                locationName={
+                  location.state
+                    ? `${location.name}, ${location.state}`
+                    : location.name
+                }
+              />
+            </FrogScene>
+          ) : (
+            <div className="aspect-square bg-white/40 rounded-2xl flex items-center justify-center">
+              <Icon icon="meteocons:partly-cloudy-day-fill" width={80} height={80} />
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Daily forecast */}
-      {weather.daily.length > 0 && (
-        <div className="max-w-4xl mx-auto w-full">
-          <DailyForecast data={weather.daily} />
+        {/* Right column — Details & forecasts */}
+        <div className="space-y-6">
+          <WeatherDetails data={weather.current} />
+
+          {weather.hourly.length > 0 && (
+            <HourlyForecast data={weather.hourly} />
+          )}
+
+          {weather.daily.length > 0 && (
+            <DailyForecast data={weather.daily} />
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

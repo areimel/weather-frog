@@ -24,7 +24,7 @@ export function FrogScene({ frogCode, scene, className = "", children, sizes }: 
           src={`/frog/${prefix}_${layer}.png`}
           alt={layer === "fg" ? `Weather Frog - ${scene.condition}` : ""}
           fill
-          sizes={sizes ?? "(min-width: 1024px) 672px, (min-width: 768px) 560px, 100vw"}
+          sizes={sizes ?? "(min-width: 768px) 50vw, 100vw"}
           style={{ zIndex: i, objectFit: "cover" }}
           priority={layer === "bg"}
         />
