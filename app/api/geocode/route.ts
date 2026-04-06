@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { getCachedGeocode, setCachedGeocode } from "@/lib/cache";
 
 const OWM_GEO = "https://api.openweathermap.org/geo/1.0/direct";
 
@@ -7,6 +8,14 @@ export async function GET(request: NextRequest) {
 
   if (!q) {
     return Response.json({ error: "q (query) is required" }, { status: 400 });
+  }
+
+  // Check cache first
+  const cached = getCachedGeocode(q);
+  if (cached) {
+    return Response.json(cached, {
+      headers: { "X-Cache": "HIT" },
+    });
   }
 
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -39,5 +48,9 @@ export async function GET(request: NextRequest) {
     })
   );
 
-  return Response.json(results);
+  setCachedGeocode(q, results);
+
+  return Response.json(results, {
+    headers: { "X-Cache": "MISS" },
+  });
 }
