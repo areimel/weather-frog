@@ -12,6 +12,8 @@ export interface CurrentWeatherData {
   tempMin: number;
   tempMax: number;
   humidity: number;
+  pressure: number;
+  cloudCover: number;
   windSpeed: number;
   visibility: number;
   conditionId: number;
@@ -40,6 +42,7 @@ export interface DailyDataPoint {
   condition: string;
   icon: string;
   pop: number;
+  humidity: number;
 }
 
 export interface WeatherResponse {

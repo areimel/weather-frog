@@ -61,6 +61,8 @@ export async function GET(request: NextRequest) {
     tempMin: Math.round(currentData.main.temp_min),
     tempMax: Math.round(currentData.main.temp_max),
     humidity: currentData.main.humidity,
+    pressure: currentData.main.pressure,
+    cloudCover: currentData.clouds.all,
     windSpeed: Math.round(currentData.wind.speed),
     visibility: Math.round((currentData.visibility ?? 10000) / 1609.34), // meters to miles
     conditionId: currentData.weather[0].id,
@@ -86,13 +88,13 @@ export async function GET(request: NextRequest) {
   // Aggregate daily forecast (group by date, take min/max temps)
   const dailyMap = new Map<
     string,
-    { dt: number; temps: number[]; conditions: { id: number; main: string; icon: string }[]; pops: number[] }
+    { dt: number; temps: number[]; conditions: { id: number; main: string; icon: string }[]; pops: number[]; humidities: number[] }
   >();
 
   for (const item of forecastData.list) {
     const date = new Date(item.dt * 1000).toISOString().split("T")[0];
     if (!dailyMap.has(date)) {
-      dailyMap.set(date, { dt: item.dt, temps: [], conditions: [], pops: [] });
+      dailyMap.set(date, { dt: item.dt, temps: [], conditions: [], pops: [], humidities: [] });
     }
     const day = dailyMap.get(date)!;
     day.temps.push(item.main.temp);
@@ -102,25 +104,48 @@ export async function GET(request: NextRequest) {
       icon: item.weather[0].icon,
     });
     day.pops.push(item.pop ?? 0);
+    day.humidities.push(item.main.humidity);
   }
 
-  // Skip the first (partial current) day, take next 5 days
-  const daily: DailyDataPoint[] = [...dailyMap.entries()]
-    .slice(1, 6)
-    .map(([, data]) => {
-      // Pick the most common condition for the day (midday-biased)
-      const midCondition =
-        data.conditions[Math.floor(data.conditions.length / 2)];
-      return {
-        dt: data.dt,
-        tempMin: Math.round(Math.min(...data.temps)),
-        tempMax: Math.round(Math.max(...data.temps)),
-        conditionId: midCondition.id,
-        condition: midCondition.main,
-        icon: midCondition.icon,
-        pop: Math.max(...data.pops),
-      };
-    });
+  // Build "Today" entry from current weather + today's forecast intervals
+  const dailyEntries = [...dailyMap.entries()];
+  const todayData = dailyEntries[0]?.[1];
+  const todayEntry: DailyDataPoint = {
+    dt: currentData.dt,
+    tempMin: Math.round(
+      Math.min(current.temp, ...(todayData?.temps ?? [current.temp]))
+    ),
+    tempMax: Math.round(
+      Math.max(current.temp, ...(todayData?.temps ?? [current.temp]))
+    ),
+    conditionId: current.conditionId,
+    condition: current.condition,
+    icon: current.icon,
+    pop: todayData ? Math.max(...todayData.pops) : 0,
+    humidity: todayData
+      ? Math.round(todayData.humidities.reduce((a, b) => a + b, 0) / todayData.humidities.length)
+      : currentData.main.humidity,
+  };
+
+  // Remaining forecast days
+  const restDays: DailyDataPoint[] = dailyEntries.slice(1, 6).map(([, data]) => {
+    const midCondition =
+      data.conditions[Math.floor(data.conditions.length / 2)];
+    return {
+      dt: data.dt,
+      tempMin: Math.round(Math.min(...data.temps)),
+      tempMax: Math.round(Math.max(...data.temps)),
+      conditionId: midCondition.id,
+      condition: midCondition.main,
+      icon: midCondition.icon,
+      pop: Math.max(...data.pops),
+      humidity: Math.round(
+        data.humidities.reduce((a, b) => a + b, 0) / data.humidities.length
+      ),
+    };
+  });
+
+  const daily: DailyDataPoint[] = [todayEntry, ...restDays];
 
   const response: WeatherResponse = { current, hourly, daily };
   return Response.json(response);

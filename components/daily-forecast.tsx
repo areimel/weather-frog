@@ -7,9 +7,16 @@ interface DailyForecastProps {
 }
 
 function formatDay(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString([], {
-    weekday: "long",
-  });
+  const date = new Date(timestamp * 1000);
+  const today = new Date();
+  if (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  ) {
+    return "Today";
+  }
+  return date.toLocaleDateString([], { weekday: "long" });
 }
 
 export function DailyForecast({ data }: DailyForecastProps) {
@@ -55,6 +62,10 @@ export function DailyForecast({ data }: DailyForecastProps) {
                   </div>
                 )}
                 {day.pop <= 0.05 && <div className="h-4"></div>}
+              </div>
+              <div className="flex items-center gap-1 text-xs text-gray-400 w-12">
+                <Icon icon="lucide:droplets" className="w-3 h-3" />
+                {day.humidity}%
               </div>
               <span className="w-9 text-sm text-gray-400 text-right">
                 {day.tempMin}°

@@ -18,13 +18,15 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
     { icon: "lucide:droplets", label: "Humidity", value: `${data.humidity}%` },
     { icon: "lucide:wind", label: "Wind", value: `${data.windSpeed} mph` },
     { icon: "lucide:eye", label: "Visibility", value: `${data.visibility} mi` },
+    { icon: "lucide:gauge", label: "Pressure", value: `${data.pressure} hPa` },
+    { icon: "lucide:cloud", label: "Cloud Cover", value: `${data.cloudCover}%` },
     { icon: "lucide:sunrise", label: "Sunrise", value: formatTime(data.sunrise) },
     { icon: "lucide:sunset", label: "Sunset", value: formatTime(data.sunset) },
   ];
 
   return (
     <div className="rounded-2xl bg-white/60 backdrop-blur-sm shadow-sm overflow-hidden">
-      <div className="grid grid-cols-2 md:grid-cols-3">
+      <div className="grid grid-cols-2 md:grid-cols-4">
         {metrics.map((m) => (
           <div
             key={m.label}

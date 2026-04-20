@@ -19,12 +19,12 @@ export function HourlyForecast({ data }: HourlyForecastProps) {
         <Icon icon="lucide:clock" className="w-3.5 h-3.5 inline mr-1.5" />
         Hourly Forecast
       </h3>
-      <div className="flex gap-1.5 overflow-x-auto pb-2">
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 pb-2">
         {data.map((item, i) => (
           <div
             key={item.dt}
             className={`
-              min-w-[72px] flex-shrink-0 rounded-2xl p-3 text-center
+              rounded-2xl p-3 text-center
               ${
                 i === 0
                   ? "bg-white/75 shadow-sm ring-2 ring-green-400/40"
@@ -38,7 +38,7 @@ export function HourlyForecast({ data }: HourlyForecastProps) {
             <div className="text-xl my-1">
               <Icon
                 icon={getWeatherIcon(item.icon)}
-                className="w-7 h-7 text-gray-600 inline"
+                className="w-10 h-10 text-gray-600 inline"
               />
             </div>
             <div className="text-sm font-semibold text-gray-700">
