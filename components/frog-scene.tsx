@@ -9,8 +9,6 @@ interface FrogSceneProps {
   sizes?: string;
 }
 
-const LAYERS = ["bg", "mg", "fg"] as const;
-
 export function FrogScene({ frogCode, scene, className = "", children, sizes }: FrogSceneProps) {
   const prefix = `${frogCode}-${scene.condition}-${scene.location}-${scene.activity}`;
 
@@ -18,7 +16,7 @@ export function FrogScene({ frogCode, scene, className = "", children, sizes }: 
     <div
       className={`relative aspect-square overflow-hidden rounded-2xl shadow-lg ${className}`}
     >
-      {LAYERS.map((layer, i) => (
+      {scene.layers.map((layer, i) => (
         <Image
           key={layer}
           src={`/frog/${prefix}_${layer}.png`}

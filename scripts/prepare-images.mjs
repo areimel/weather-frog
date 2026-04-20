@@ -62,16 +62,21 @@ async function main() {
   }
   console.log(`Copied ${copied} files to ${OUT_DIR}`);
 
-  // Build scene catalog (only from _bg files to avoid triple-counting)
-  const scenes = new Map(); // code -> Set of "condition|location|activity"
+  // Build scene catalog — track which layers each scene has on disk
+  // code -> Map<"condition|location|activity", Set<"bg"|"mg"|"fg">>
+  const scenes = new Map();
   for (const file of files) {
     const parsed = parseFilename(file);
-    if (!parsed || parsed.layer !== "bg") continue;
+    if (!parsed) continue;
 
-    const key = parsed.code;
-    if (!scenes.has(key)) scenes.set(key, new Set());
-    scenes.get(key).add(`${parsed.condition}|${parsed.location}|${parsed.activity}`);
+    const sceneKey = `${parsed.condition}|${parsed.location}|${parsed.activity}`;
+    if (!scenes.has(parsed.code)) scenes.set(parsed.code, new Map());
+    const codeScenes = scenes.get(parsed.code);
+    if (!codeScenes.has(sceneKey)) codeScenes.set(sceneKey, new Set());
+    codeScenes.get(sceneKey).add(parsed.layer);
   }
+
+  const LAYER_ORDER = ["bg", "mg", "fg"];
 
   // Generate TypeScript catalog
   const lines = [
@@ -81,6 +86,7 @@ async function main() {
     "  condition: string;",
     "  location: string;",
     "  activity: string;",
+    "  layers: (\"bg\" | \"mg\" | \"fg\")[];",
     "}",
     "",
     "export const FROG_SCENES: Record<string, FrogScene[]> = {",
@@ -88,11 +94,14 @@ async function main() {
 
   const sortedCodes = [...scenes.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   for (const code of sortedCodes) {
-    const sceneList = [...scenes.get(code)].sort();
+    const codeScenes = scenes.get(code);
+    const sceneKeys = [...codeScenes.keys()].sort();
     lines.push(`  "${code}": [`);
-    for (const scene of sceneList) {
-      const [condition, location, activity] = scene.split("|");
-      lines.push(`    { condition: "${condition}", location: "${location}", activity: "${activity}" },`);
+    for (const sceneKey of sceneKeys) {
+      const [condition, location, activity] = sceneKey.split("|");
+      const layers = LAYER_ORDER.filter((l) => codeScenes.get(sceneKey).has(l));
+      const layersLiteral = layers.map((l) => `"${l}"`).join(", ");
+      lines.push(`    { condition: "${condition}", location: "${location}", activity: "${activity}", layers: [${layersLiteral}] },`);
     }
     lines.push("  ],");
   }
