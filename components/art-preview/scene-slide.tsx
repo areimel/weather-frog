@@ -1,29 +1,30 @@
-import { SwiperSlide } from "swiper/react";
 import type { FrogScene as FrogSceneType } from "@/lib/frog-scenes";
 import { FrogScene } from "@/components/frog-scene";
 import { SceneCaption } from "@/components/art-preview/scene-caption";
 
 interface SceneSlideProps {
-  frogCode: string;
-  scene: FrogSceneType;
+  entry: { code: string; scene: FrogSceneType };
   index: number;
   total: number;
+  conditionLabel: string;
 }
 
-export function SceneSlide({ frogCode, scene, index, total }: SceneSlideProps) {
+export function SceneSlide({ entry, index, total, conditionLabel }: SceneSlideProps) {
   return (
-    <SwiperSlide>
-      <div className="px-2">
+    <div className="px-2">
+      <div className="max-w-2xl mx-auto">
         <FrogScene
-          frogCode={frogCode}
-          scene={scene}
-          className="max-w-sm mx-auto"
-          sizes="(min-width: 1024px) 384px, (min-width: 768px) 320px, 80vw"
+          frogCode={entry.code}
+          scene={entry.scene}
+          sizes="(min-width: 768px) 672px, 100vw"
         />
-        <div className="max-w-sm mx-auto">
-          <SceneCaption scene={scene} index={index} total={total} />
-        </div>
+        <SceneCaption
+          scene={entry.scene}
+          index={index}
+          total={total}
+          conditionLabel={conditionLabel}
+        />
       </div>
-    </SwiperSlide>
+    </div>
   );
 }

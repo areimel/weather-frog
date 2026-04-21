@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/thumbs";
+@import "swiper/css/free-mode";
+@import "swiper/css/keyboard";
+@import "swiper/css/a11y";
 
 :root {
   --background: #e8f5e9;
@@ -43,12 +48,7 @@ body {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 40%, transparent 100%);
 }
 
-/* Swiper theme */
-.swiper-button-next,
-.swiper-button-prev {
-  --swiper-navigation-color: #15803d;
-  --swiper-navigation-sides-offset: 2px;
-}
-.swiper-pagination-bullet-active {
-  background: #15803d;
+/* Active thumb indicator (Swiper adds .swiper-slide-thumb-active to the active thumb slide) */
+.swiper-slide-thumb-active [data-scene-thumb] {
+  outline-color: #15803d;
 }
