@@ -44,10 +44,6 @@ body {
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.scrim-bottom {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 40%, transparent 100%);
-}
-
 /* Active thumb indicator (Swiper adds .swiper-slide-thumb-active to the active thumb slide) */
 .swiper-slide-thumb-active [data-scene-thumb] {
   outline-color: #15803d;

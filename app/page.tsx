@@ -10,14 +10,14 @@ import { Icon } from "@iconify/react";
 
 function LoadingSkeleton() {
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="max-w-screen-2xl mx-auto w-full px-4 py-6 md:h-full md:flex md:flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:flex-1 md:min-h-0">
         {/* Hero skeleton */}
-        <div className="animate-fade-up">
-          <div className="aspect-square bg-white/40 rounded-2xl animate-pulse" />
+        <div className="animate-fade-up md:min-h-0 md:flex">
+          <div className="aspect-square md:aspect-auto md:flex-1 bg-white/40 rounded-2xl animate-pulse" />
         </div>
         {/* Right column skeleton */}
-        <div className="space-y-6">
+        <div className="space-y-6 md:min-h-0 md:overflow-y-auto md:pr-2">
           <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
           <div className="h-24 bg-white/40 rounded-2xl animate-pulse" />
           <div className="h-64 bg-white/40 rounded-2xl animate-pulse" />
@@ -79,12 +79,17 @@ export default function Home() {
   if (!weather || !location) return <LocationPrompt />;
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="max-w-screen-2xl mx-auto w-full px-4 py-6 md:h-full md:flex md:flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:flex-1 md:min-h-0">
         {/* Left column — Hero */}
-        <div className="animate-fade-up">
+        <div className="animate-fade-up md:min-h-0 md:flex">
           {frogScene ? (
-            <FrogScene frogCode={frogCode} scene={frogScene}>
+            <FrogScene
+              frogCode={frogCode}
+              scene={frogScene}
+              fillHeight
+              className="md:w-full"
+            >
               <CurrentWeather
                 data={weather.current}
                 locationName={
@@ -95,14 +100,14 @@ export default function Home() {
               />
             </FrogScene>
           ) : (
-            <div className="aspect-square bg-white/40 rounded-2xl flex items-center justify-center">
+            <div className="aspect-square md:aspect-auto md:flex-1 bg-white/40 rounded-2xl flex items-center justify-center">
               <Icon icon="meteocons:partly-cloudy-day-fill" width={80} height={80} />
             </div>
           )}
         </div>
 
         {/* Right column — Details & forecasts */}
-        <div className="space-y-6">
+        <div className="space-y-6 md:min-h-0 md:overflow-y-auto md:pr-2">
           <WeatherDetails data={weather.current} />
 
           {weather.hourly.length > 0 && (
