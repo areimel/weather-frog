@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+frog-images-src
+frog-images-optimized
+*.md
+.env*

@@ -5,6 +5,11 @@ import type {
   HourlyDataPoint,
   DailyDataPoint,
 } from "@/lib/types";
+import {
+  getCachedWeather,
+  setCachedWeather,
+  cleanExpiredEntries,
+} from "@/lib/cache";
 
 const OWM_BASE = "https://api.openweathermap.org/data/2.5";
 
@@ -21,6 +26,14 @@ export async function GET(request: NextRequest) {
   const lonNum = parseFloat(lon);
   if (isNaN(latNum) || isNaN(lonNum) || latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
     return Response.json({ error: "Invalid coordinates" }, { status: 400 });
+  }
+
+  // Check cache first
+  const cached = getCachedWeather(latNum, lonNum);
+  if (cached) {
+    return Response.json(cached, {
+      headers: { "X-Cache": "HIT" },
+    });
   }
 
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -123,5 +136,12 @@ export async function GET(request: NextRequest) {
     });
 
   const response: WeatherResponse = { current, hourly, daily };
-  return Response.json(response);
+
+  // Cache the response and periodically clean expired entries
+  setCachedWeather(latNum, lonNum, response);
+  if (Math.random() < 0.05) cleanExpiredEntries();
+
+  return Response.json(response, {
+    headers: { "X-Cache": "MISS" },
+  });
 }
